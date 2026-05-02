@@ -34,13 +34,17 @@ export function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item}
-                onClick={() => scrollToSection(item.toLowerCase())}
+                href={`#${item.toLowerCase()}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection(item.toLowerCase())
+                }}
                 className="text-white hover:text-teal-bright transition-colors text-sm font-body"
               >
                 {item}
-              </button>
+              </a>
             ))}
           </div>
 
@@ -48,6 +52,9 @@ export function Navbar() {
           <button
             className="md:hidden text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -57,16 +64,20 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <GlassCard className="md:hidden mb-4 p-4">
+          <GlassCard className="md:hidden mb-4 p-4" id="mobile-menu">
             <div className="flex flex-col gap-4">
               {navItems.map((item) => (
-                <button
+                <a
                   key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
+                  href={`#${item.toLowerCase()}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    scrollToSection(item.toLowerCase())
+                  }}
                   className="text-white hover:text-teal-bright transition-colors text-sm font-body text-left"
                 >
                   {item}
-                </button>
+                </a>
               ))}
             </div>
           </GlassCard>

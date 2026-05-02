@@ -3,25 +3,49 @@ import { useState } from 'react'
 import { GlassCard } from '../ui/GlassCard'
 import { GlowButton } from '../ui/GlowButton'
 
+type Status = 'idle' | 'sending' | 'sent' | 'error'
+
 export function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<Status>('idle')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the form data to a server
-    console.log('Form submitted:', formData)
-    setSubmitted(true)
-    setTimeout(() => {
+    setStatus('sending')
+    try {
+      // For now, just log to console and show success message
+      // To enable email sending, add VITE_WEB3FORMS_KEY to your .env
+      console.log('Form submission:', formData)
+      // TODO: Uncomment when ready to use Web3Forms
+      // const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
+      // const res = await fetch('https://api.web3forms.com/submit', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     access_key: WEB3FORMS_KEY,
+      //     subject: `Portfolio contact from ${formData.name}`,
+      //     from_name: 'Dithhi Dasgupta Portfolio',
+      //     ...formData,
+      //   }),
+      // })
+      // if (!res.ok) throw new Error('Form submission failed')
+      
+      setStatus('sent')
       setFormData({ name: '', email: '', message: '' })
-      setSubmitted(false)
-    }, 3000)
+      setTimeout(() => setStatus('idle'), 4000)
+    } catch (error) {
+      console.error('Form error:', error)
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 4000)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
+
+  const inputCls = 'w-full rounded-xl border border-white/10 bg-white/5 px-3 py-3 font-mono text-white placeholder:text-white/40 focus:border-teal-bright/50 focus:outline-none focus:ring-2 focus:ring-teal-bright/20'
 
   return (
     <section id="contact" className="section-block">
@@ -84,110 +108,71 @@ export function Contact() {
 
             <div className="my-8 h-px bg-gradient-to-r from-teal-bright/20 to-transparent" />
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>
-                <label className="block text-xs font-mono text-white/60 mb-2">name:</label>
+                <label htmlFor="contact-name" className="block text-xs font-mono text-white/60 mb-2">
+                  Name
+                </label>
                 <input
+                  id="contact-name"
                   type="text"
                   name="name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
                   placeholder="Your name"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: '12px',
-                    color: 'white',
-                    fontFamily: 'JetBrains Mono',
-                    padding: '12px',
-                    width: '100%',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(45,212,191,0.5)'
-                    e.target.style.boxShadow = '0 0 20px rgba(45,212,191,0.1)'
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(255,255,255,0.12)'
-                    e.target.style.boxShadow = 'none'
-                  }}
+                  className={inputCls}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-white/60 mb-2">email:</label>
+                <label htmlFor="contact-email" className="block text-xs font-mono text-white/60 mb-2">
+                  Email
+                </label>
                 <input
+                  id="contact-email"
                   type="email"
                   name="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="your@email.com"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: '12px',
-                    color: 'white',
-                    fontFamily: 'JetBrains Mono',
-                    padding: '12px',
-                    width: '100%',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(45,212,191,0.5)'
-                    e.target.style.boxShadow = '0 0 20px rgba(45,212,191,0.1)'
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(255,255,255,0.12)'
-                    e.target.style.boxShadow = 'none'
-                  }}
+                  placeholder="you@example.com"
+                  className={inputCls}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-white/60 mb-2">message:</label>
+                <label htmlFor="contact-message" className="block text-xs font-mono text-white/60 mb-2">
+                  Message
+                </label>
                 <textarea
+                  id="contact-message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  placeholder="Your message here..."
-                  rows={4}
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: '12px',
-                    color: 'white',
-                    fontFamily: 'JetBrains Mono',
-                    padding: '12px',
-                    width: '100%',
-                    resize: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(45,212,191,0.5)'
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(45,212,191,0.1)'
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}
+                  placeholder="A line about why you're reaching out…"
+                  rows={5}
+                  className={`${inputCls} resize-y`}
                 />
               </div>
 
               <div className="pt-4">
-                <GlowButton className="w-full">
-                  &gt; SEND_MESSAGE
+                <GlowButton type="submit" disabled={status === 'sending'} className="w-full">
+                  {status === 'sending' ? 'Sending…' : '> SEND_MESSAGE'}
                 </GlowButton>
               </div>
 
-              {submitted && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center text-teal-bright text-sm font-mono"
-                >
-                  Message sent successfully! ✓
-                </motion.p>
-              )}
+              <div role="status" aria-live="polite" className="min-h-[24px] text-center text-sm font-mono">
+                {status === 'sent' && (
+                  <span className="text-teal-bright">✓ Message sent — I'll reply within a day or two.</span>
+                )}
+                {status === 'error' && (
+                  <span className="text-red-400">Something went wrong. Please email dids2367@gmail.com directly.</span>
+                )}
+              </div>
             </form>
           </GlassCard>
 

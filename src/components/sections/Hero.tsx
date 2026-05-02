@@ -24,7 +24,6 @@ export function Hero() {
                 fontWeight: 300,
                 lineHeight: 1.1,
                 color: 'white',
-                whiteSpace: 'nowrap',
               }}
             >
               Dithhi Dasgupta

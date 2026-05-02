@@ -18,7 +18,7 @@ export function TerminalText({ text, delay = 0 }: TerminalTextProps) {
         } else {
           clearInterval(interval)
         }
-      }, 50)
+      }, 30)
 
       return () => clearInterval(interval)
     }, delay)

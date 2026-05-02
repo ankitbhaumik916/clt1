@@ -3,11 +3,13 @@ import React from 'react'
 interface GlassCardProps {
   children: React.ReactNode
   className?: string
+  id?: string
 }
 
-export function GlassCard({ children, className = '' }: GlassCardProps) {
+export function GlassCard({ children, className = '', id }: GlassCardProps) {
   return (
     <div
+      id={id}
       className={`rounded-2xl border transition-all duration-300 group ${className}`}
       style={{
         background: 'rgba(255,255,255,0.06)',
