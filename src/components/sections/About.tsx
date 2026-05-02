@@ -66,9 +66,9 @@ export function About() {
           className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 items-start"
         >
           <div className="flex flex-col items-center gap-6">
-            <GlassCard className="overflow-hidden p-0 w-full">
+            <GlassCard className="overflow-hidden p-0 w-full aspect-square flex items-center justify-center">
               <div
-                className="mx-auto h-64 w-64 overflow-hidden"
+                className="h-full w-full flex items-center justify-center"
                 style={{
                   clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                 }}
@@ -76,7 +76,8 @@ export function About() {
                 <img 
                   src="/profile.jpg" 
                   alt="Dithhi Dasgupta" 
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover object-center"
+                  loading="lazy"
                 />
               </div>
             </GlassCard>
