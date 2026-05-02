@@ -1,0 +1,21 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020c0e"/>
+      <stop offset="1" stop-color="#041f22"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="180" y1="120" x2="1020" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2dd4bf" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#4ade80" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="36" fill="url(#bg)"/>
+  <circle cx="240" cy="152" r="110" fill="#2dd4bf" fill-opacity="0.12"/>
+  <circle cx="980" cy="490" r="160" fill="#4ade80" fill-opacity="0.10"/>
+  <path d="M180 410C290 240 430 180 600 180C770 180 910 240 1020 410" stroke="url(#accent)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M240 450L330 320L420 450L510 320L600 450L690 320L780 450L870 320L960 450" stroke="#ffffff" stroke-opacity="0.14" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="96" y="120" fill="#c8fff6" font-family="Space Grotesk, Arial, sans-serif" font-size="28" letter-spacing="4">DITHHI DASGUPTA</text>
+  <text x="96" y="225" fill="#ffffff" font-family="Space Grotesk, Arial, sans-serif" font-size="72" font-weight="700">Biotechnology Engineer</text>
+  <text x="96" y="305" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="34" fill-opacity="0.82">Research projects, experience, and contact details</text>
+  <text x="96" y="548" fill="#7ff7e6" font-family="JetBrains Mono, monospace" font-size="26">dids2367@gmail.com • 9475542893</text>
+</svg>
