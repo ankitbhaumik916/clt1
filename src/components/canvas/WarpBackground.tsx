@@ -1,6 +1,18 @@
 import { Warp } from '@paper-design/shaders-react'
+import { useEffect, useState } from 'react'
 
 export function WarpBackground() {
+  const [showWarp, setShowWarp] = useState(true)
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setShowWarp(!reduced)
+  }, [])
+
+  if (!showWarp) {
+    return <div className="fixed inset-0 z-0 bg-[#020c0e]" aria-hidden="true" />
+  }
+
   return (
     <div className="fixed inset-0 z-0" aria-hidden="true">
       <Warp

@@ -1,5 +1,4 @@
-import { Suspense } from 'react'
-import { WarpBackground } from './components/canvas/WarpBackground'
+import { Suspense, lazy } from 'react'
 import { Navbar } from './components/ui/Navbar'
 import { Hero } from './components/sections/Hero'
 import { About } from './components/sections/About'
@@ -10,10 +9,18 @@ import { Achievements } from './components/sections/Achievements'
 import { Contact } from './components/sections/Contact'
 import './index.css'
 
+const WarpBackground = lazy(() =>
+  import('./components/canvas/WarpBackground').then((m) => ({
+    default: m.WarpBackground,
+  }))
+)
+
 function App() {
   return (
     <>
-      <WarpBackground />
+      <Suspense fallback={<div className="fixed inset-0 z-0 bg-[#020c0e]" />}>
+        <WarpBackground />
+      </Suspense>
       <div className="relative z-10 w-full overflow-x-hidden">
         <Navbar />
         <main className="w-full">

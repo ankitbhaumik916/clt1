@@ -6,12 +6,29 @@ export function DnaHelix() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')!
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-    canvas.width = 300
-    canvas.height = 520
-    const W = canvas.width
-    const H = canvas.height
+    // Check for reduced motion preference
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) {
+      canvas.width = 300
+      canvas.height = 520
+      ctx.fillStyle = '#020c0e'
+      ctx.fillRect(0, 0, 300, 520)
+      return
+    }
+
+    // Apply DPR capping for performance
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    canvas.width = 300 * dpr
+    canvas.height = 520 * dpr
+    canvas.style.width = '300px'
+    canvas.style.height = '520px'
+    ctx.scale(dpr, dpr)
+
+    const W = 300
+    const H = 520
     const CX = W / 2
 
     const RUNGS = 26
@@ -24,14 +41,15 @@ export function DnaHelix() {
 
     const SEQ = [0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1]
     const PAIRS = [
-      { a: '#e91919', b: '#e0810e' },
-      { a: '#1c170e', b: '#4012f8' },
+      { a: '#e91919', b: '#e0810e', aRgb: '233,25,25', bRgb: '224,129,14' },
+      { a: '#1c170e', b: '#4012f8', aRgb: '28,23,14', bRgb: '64,18,248' },
     ]
 
     let rot = 0
     let scroll = 0
     let wobble = 0
     let rafId = 0
+    let isVisible = true
 
     type Particle = {
       x: number
@@ -69,15 +87,13 @@ export function DnaHelix() {
 
     function drawParticles() {
       for (const p of particles) {
-        ctx.save()
-        ctx.globalAlpha = p.life * 0.7
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = p.col
-        ctx.shadowBlur = 6
-        ctx.shadowColor = p.col
-        ctx.fill()
-        ctx.restore()
+        ctx!.save()
+        ctx!.globalAlpha = p.life * 0.7
+        ctx!.beginPath()
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+        ctx!.fillStyle = p.col
+        ctx!.fill()
+        ctx!.restore()
       }
     }
 
@@ -118,43 +134,34 @@ export function DnaHelix() {
       ]
 
       for (const { lw, alpha } of layers) {
-        ctx.save()
-        ctx.beginPath()
-        ctx.moveTo(pts[0].x, pts[0].y)
+        ctx!.save()
+        ctx!.beginPath()
+        ctx!.moveTo(pts[0].x, pts[0].y)
         for (let i = 1; i < pts.length; i++) {
           const p = pts[i - 1]
           const q = pts[i]
-          ctx.quadraticCurveTo(p.x, p.y, (p.x + q.x) / 2, (p.y + q.y) / 2)
+          ctx!.quadraticCurveTo(p.x, p.y, (p.x + q.x) / 2, (p.y + q.y) / 2)
         }
-        ctx.quadraticCurveTo(
+        ctx!.quadraticCurveTo(
           pts[pts.length - 2].x,
           pts[pts.length - 2].y,
           pts[pts.length - 1].x,
           pts[pts.length - 1].y,
         )
         const col = strand === 'A' ? '45,212,191' : '167,139,250'
-        const g = ctx.createLinearGradient(0, 28, 0, H - 28)
+        const g = ctx!.createLinearGradient(0, 28, 0, H - 28)
         g.addColorStop(0, `rgba(${col},${alpha * 0.4})`)
         g.addColorStop(0.25, `rgba(${col},${alpha})`)
         g.addColorStop(0.5, `rgba(${col},${alpha})`)
         g.addColorStop(0.75, `rgba(${col},${alpha})`)
         g.addColorStop(1, `rgba(${col},${alpha * 0.4})`)
-        ctx.strokeStyle = g
-        ctx.lineWidth = lw
-        ctx.lineCap = 'round'
-        ctx.lineJoin = 'round'
-        ctx.shadowBlur = lw > 2 ? 8 : 0
-        ctx.shadowColor = strand === 'A' ? '#151f1e' : '#a78bfa'
-        ctx.stroke()
-        ctx.restore()
+        ctx!.strokeStyle = g
+        ctx!.lineWidth = lw
+        ctx!.lineCap = 'round'
+        ctx!.lineJoin = 'round'
+        ctx!.stroke()
+        ctx!.restore()
       }
-    }
-
-    function hexToRgb(hex: string) {
-      const r = parseInt(hex.slice(1, 3), 16)
-      const g = parseInt(hex.slice(3, 5), 16)
-      const b = parseInt(hex.slice(5, 7), 16)
-      return `${r},${g},${b}`
     }
 
     function drawRung(r: ReturnType<typeof buildRungs>[number]) {
@@ -166,65 +173,60 @@ export function DnaHelix() {
 
       const bondAlpha = (0.1 + 0.25 * avg) * groove
 
-      const hgA = ctx.createLinearGradient(x1, y, mx, y)
-      hgA.addColorStop(0, `rgba(${hexToRgb(pair.a)},${bondAlpha + 0.05 * dA})`)
+      const hgA = ctx!.createLinearGradient(x1, y, mx, y)
+      hgA.addColorStop(0, `rgba(${pair.aRgb},${bondAlpha + 0.05 * dA})`)
       hgA.addColorStop(1, `rgba(255,255,255,${bondAlpha * 0.4})`)
-      ctx.beginPath()
-      ctx.moveTo(x1, y)
-      ctx.lineTo(mx, y)
-      ctx.strokeStyle = hgA
-      ctx.lineWidth = 1 + avg * 1.5
-      ctx.shadowBlur = 0
-      ctx.stroke()
+      ctx!.beginPath()
+      ctx!.moveTo(x1, y)
+      ctx!.lineTo(mx, y)
+      ctx!.strokeStyle = hgA
+      ctx!.lineWidth = 1 + avg * 1.5
+      ctx!.stroke()
 
-      const hgB = ctx.createLinearGradient(mx, y, x2, y)
+      const hgB = ctx!.createLinearGradient(mx, y, x2, y)
       hgB.addColorStop(0, `rgba(255,255,255,${bondAlpha * 0.4})`)
-      hgB.addColorStop(1, `rgba(${hexToRgb(pair.b)},${bondAlpha + 0.05 * dB})`)
-      ctx.beginPath()
-      ctx.moveTo(mx, y)
-      ctx.lineTo(x2, y)
-      ctx.strokeStyle = hgB
-      ctx.lineWidth = 1 + avg * 1.5
-      ctx.stroke()
+      hgB.addColorStop(1, `rgba(${pair.bRgb},${bondAlpha + 0.05 * dB})`)
+      ctx!.beginPath()
+      ctx!.moveTo(mx, y)
+      ctx!.lineTo(x2, y)
+      ctx!.strokeStyle = hgB
+      ctx!.lineWidth = 1 + avg * 1.5
+      ctx!.stroke()
 
       const sA = 4.5 + 8 * dA
-      ctx.save()
-      ctx.globalAlpha = 0.45 + 0.55 * dA
-      const rA = ctx.createRadialGradient(x1 - sA * 0.3, y - sA * 0.3, 0, x1, y, sA)
+      ctx!.save()
+      ctx!.globalAlpha = 0.45 + 0.55 * dA
+      const rA = ctx!.createRadialGradient(x1 - sA * 0.3, y - sA * 0.3, 0, x1, y, sA)
       rA.addColorStop(0, '#ffffff')
       rA.addColorStop(0.25, pair.a)
       rA.addColorStop(0.7, pair.a + 'bb')
       rA.addColorStop(1, pair.a + '33')
-      ctx.beginPath()
-      ctx.arc(x1, y, sA, 0, Math.PI * 2)
-      ctx.fillStyle = rA
-      ctx.shadowBlur = 8 + 14 * dA
-      ctx.shadowColor = pair.a
-      ctx.fill()
-      ctx.restore()
+      ctx!.beginPath()
+      ctx!.arc(x1, y, sA, 0, Math.PI * 2)
+      ctx!.fillStyle = rA
+      ctx!.fill()
+      ctx!.restore()
 
       const sB = 4 + 7 * dB
-      ctx.save()
-      ctx.globalAlpha = 0.45 + 0.55 * dB
-      const rB = ctx.createRadialGradient(x2 - sB * 0.3, y - sB * 0.3, 0, x2, y, sB)
+      ctx!.save()
+      ctx!.globalAlpha = 0.45 + 0.55 * dB
+      const rB = ctx!.createRadialGradient(x2 - sB * 0.3, y - sB * 0.3, 0, x2, y, sB)
       rB.addColorStop(0, '#ffffff')
       rB.addColorStop(0.25, pair.b)
       rB.addColorStop(0.7, pair.b + 'bb')
       rB.addColorStop(1, pair.b + '33')
-      ctx.beginPath()
-      ctx.arc(x2, y, sB, 0, Math.PI * 2)
-      ctx.fillStyle = rB
-      ctx.shadowBlur = 6 + 12 * dB
-      ctx.shadowColor = pair.b
-      ctx.fill()
-      ctx.restore()
+      ctx!.beginPath()
+      ctx!.arc(x2, y, sB, 0, Math.PI * 2)
+      ctx!.fillStyle = rB
+      ctx!.fill()
+      ctx!.restore()
 
       if (Math.random() < 0.002) emit(x1, y, pair.a)
       if (Math.random() < 0.002) emit(x2, y, pair.b)
     }
 
     function frame() {
-      ctx.clearRect(0, 0, W, H)
+      ctx!.clearRect(0, 0, W, H)
 
       rot += ROT_SPD
       scroll += SCROLL_SPD
@@ -241,12 +243,33 @@ export function DnaHelix() {
       tickParticles()
       drawParticles()
 
-      rafId = requestAnimationFrame(frame)
+      if (isVisible) {
+        rafId = requestAnimationFrame(frame)
+      }
     }
 
-    frame()
+    // IntersectionObserver to pause animation when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isVisible) {
+          isVisible = true
+          rafId = requestAnimationFrame(frame)
+        } else if (!entry.isIntersecting && isVisible) {
+          isVisible = false
+          cancelAnimationFrame(rafId)
+        }
+      },
+      { threshold: 0 }
+    )
 
-    return () => cancelAnimationFrame(rafId)
+    observer.observe(canvas)
+
+    rafId = requestAnimationFrame(frame)
+
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(rafId)
+    }
   }, [])
 
   return <canvas ref={canvasRef} style={{ background: 'transparent', display: 'block' }} />
