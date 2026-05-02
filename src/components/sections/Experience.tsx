@@ -48,7 +48,7 @@ export function Experience() {
         <div className="relative pl-8">
           <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-teal-bright/40" />
 
-          <div className="space-y-8 md:space-y-12">
+          <div className="space-y-12 md:space-y-16">
             {experiences.map((exp, idx) => (
               <motion.div
                 key={idx}
@@ -63,8 +63,8 @@ export function Experience() {
                   style={{ boxShadow: '0 0 12px rgba(45,212,191,0.8)' }}
                 />
 
-                <GlassCard className="w-full p-8">
-                  <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <GlassCard className="w-full p-6 md:p-10">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <HudBadge label={exp.badge} />
                     {exp.date && <span className="text-xs font-mono text-white/60">{exp.date}</span>}
                   </div>
